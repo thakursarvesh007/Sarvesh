@@ -1,0 +1,95 @@
+from datetime import *
+from tkinter import *
+from tkinter.messagebox import *
+import os
+
+def save():
+	try:		
+		amt = ent_amt.get()
+		gst = ent_gst.get()
+		tip = ent_tip.get()
+
+
+		if amt == "":
+			showerror("amount issue","amount should not be empty")
+			ent_amt.focus()
+			return
+	
+		if gst == "":
+			showerror("GST amount issue","GST amount should not be empty")
+			ent_gst.focus()
+			return
+		else:
+			gst_amt = float(amt) * (float(gst) * 0.01)
+			sgst_amt = float(gst_amt) * 0.5
+			cgst_amt = float(gst_amt) * 0.5
+
+		if tip == "":
+			showerror("tip issue","tip can be zero if not given")
+			ent_tip.focus()
+			return
+		else:
+			tip_amt = float(amt) * (float(tip) * 0.01)		
+	
+		final_amt = float(amt) + float(gst_amt) + float(tip_amt)
+		dt = datetime.now()
+
+		count = 1
+		
+		res = os.listdir(".")
+		for r in res:
+			if r.startswith("bill"):
+				count = count + 1
+		fn = "bill_" + str(count) + ".txt"
+		
+		f = open(fn, "w")
+		f.write("Thakur's Cafe" + "\n")
+		f.write("Billing date and time " + str(dt.strftime("%d-%m-%y %H:%M:%S")) + "\n")
+		f.write("Amount = Rs." + str(amt) + "\n")
+		f.write("SGST amount = Rs." + str(sgst_amt) + "\n")
+		f.write("CGST amount = Rs." + str(cgst_amt) + "\n")
+		f.write("Tip amount = Rs." + str(tip_amt) + "\n")
+		f.write("=============== " + "\n")
+		f.write("Final Amount to be paid = Rs." + str(final_amt))
+		f.close()
+		showinfo("Success","Bill Generated Thank you")
+		ent_amt.delete(0,END)
+		ent_gst.delete(0,END)
+		ent_tip.delete(0,END)
+		ent_amt.focus()
+	#except ValueError:
+		#showerror("issue","All above mentioned fields should be Non-empty and numeric only")
+	except Exception as e:
+		showerror("issue",e)			
+							
+root = Tk()
+root.title("Bill Generator")
+root.geometry("700x600+300+20")
+f = ("Arial",30,"bold")
+
+lab_header = Label(root,text="Bill Generator",font=f)
+lab_header.pack(pady=20)
+
+lab_amt = Label(root, text="Enter Amount",font=f)
+lab_amt.pack(pady=5)
+
+ent_amt = Entry(root,font=f)
+ent_amt.pack(pady=5)
+
+lab_gst = Label(root, text="Enter GST %",font=f)
+lab_gst.pack(pady=5)
+
+ent_gst = Entry(root,font=f)
+ent_gst.pack(pady=5)
+
+lab_tip = Label(root, text="Enter Tip %",font=f)
+lab_tip.pack(pady=5)
+
+ent_tip = Entry(root,font=f)
+ent_tip.pack(pady=5)
+
+btn_generate = Button(root,text="Generate Bill",font=f,command=save)
+btn_generate.pack(pady=20)
+ent_amt.focus()
+
+root.mainloop()
