@@ -1,1 +1,78 @@
+from requests import *
+from tkinter import *
+from tkinter.messagebox import *
+from datetime import *
+from time import sleep
 
+def find():
+	try:
+		city = ent_city.get()
+		if city == "":
+			showerror("City issue","City should not be empty")
+			ent_city.focus()
+			lab_msg.configure(text="")
+		else:
+			x1 = "https://api.waqi.info/feed/"
+			x3 = "/?token=3233649ab0cd3cfea9776bc92fb2c25b34190159"
+			url = x1 + city + x3
+			res = get(url)
+			#showinfo("success",res)
+			
+			data = res.json()
+			#print(data)
+
+			if data["status"] == "error":
+				msg =  "Air Quality Index of " + city + " no idea "
+				lab_msg.configure(text=msg)
+				ent_city.delete(0,END)
+			else:
+				aqi = data["data"]["aqi"]
+				
+				if aqi > 300:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is Hazardous...!!!!"
+					lab_msg.configure(text=msg,fg="red4")					
+				elif aqi > 200:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is very unhealthy...!!!"
+					lab_msg.configure(text=msg,fg="red")
+				elif aqi > 150:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is unhealthy...!!"
+					lab_msg.configure(text=msg,fg="OrangeRed4")
+				elif aqi > 100:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is unhealthy for sensitive groups...!"
+					lab_msg.configure(text=msg,fg="OrangeRed2")
+				elif aqi > 50:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is Moderate...!"
+					lab_msg.configure(text=msg,fg="orange2")
+				else:
+					msg = "Air Quality Index of " + str.lower(city) +" is: " + str(aqi) + "\n" + "This is Good ... :)"
+					lab_msg.configure(text=msg,fg="lime green")
+				
+				ent_city.delete(0,END)
+	except Exception  as e:
+		showerror("issue", e)
+
+root = Tk()
+root.title("Air Quality Index Finder")
+root.geometry("600x500+200+10")
+f = ("Arial",20,"bold")
+f1=("Century Gothic",30,"bold")
+
+root.configure(bg="light cyan")
+
+lab_header = Label(root,text="Air Quality Index Finder",font=f1,fg="magenta2",bg="light cyan")
+lab_header.pack(pady=20)
+
+lab_city = Label(root,text="Enter city name",font=f1,bg="light cyan")
+lab_city.pack(pady=10)
+
+ent_city = Entry(root,font=f1,bg="yellow",fg="maroon1")
+ent_city.pack(pady=10)
+
+btn_find = Button(root,text="Find AQI",font=f1,fg="white",bg="black",command=find)
+btn_find.pack(pady=10)
+
+lab_msg = Label(root,text="",font=f,fg="blue",bg="light cyan")
+lab_msg.pack(pady=20)
+ent_city.focus()
+
+root.mainloop()
