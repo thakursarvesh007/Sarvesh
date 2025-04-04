@@ -1,0 +1,223 @@
+from tkinter import *
+from tkinter.messagebox import *
+import matplotlib.pyplot as plt
+from sqlite3 import *
+from time import sleep
+
+def save():
+	con = None
+	try:
+		nm = ent_name.get()
+		if nm == "":
+			showerror("Name issue","Name cannot be empty")
+			return
+			ent_name.focus()
+		col = ent_col.get()
+		if col == "":
+			showerror("College name issue","College name cannot be empty")
+			return
+			ent_col.focus()
+		phone = ent_phone.get()
+		if phone == "":
+			showerror("Phone no. issue","Phone no. cannot be empty")
+			return
+			ent_phone.focus()
+		if phone.isdigit() ==False:
+			showerror("Phone no. issue","Phone no. should be Numeric only")
+			return
+			ent_phone.focus()
+		if (phone.isdigit() and len(phone) < 10) or (phone.isdigit() and len(phone) > 10):
+			showerror("Phone no. issue","Phone no. should be 10 digits only")
+			return
+			ent_phone.focus()
+		sem1 = ent_sem1.get()
+		if sem1 == "":
+			showerror("Sem 1 CGPA issue","Sem 1 CGPA cannot be empty")
+			return
+			ent_sem1.focus()
+		if float(sem1) < 0:
+			showerror("Sem 1 CGPA issue","Sem 1 CGPA cannot be less than Zero")
+			return
+			ent_sem1.focus()
+		sem2 = ent_sem2.get()
+		if sem2 == "":
+			showerror("Sem 2 CGPA issue","Sem 2 CGPA cannot be empty")
+			return
+			ent_sem2.focus()
+		if float(sem2) < 0:
+			showerror("Sem 2 CGPA issue","Sem 2 CGPA cannot be less than Zero")
+			return
+			ent_sem2.focus()
+		sem3 = ent_sem3.get()
+		if sem3 == "":
+			showerror("Sem 3 CGPA issue","Sem 3 CGPA cannot be empty")
+			return
+			ent_sem3.focus()
+		if float(sem3) < 0:
+			showerror("Sem 3 CGPA issue","Sem 3 CGPA cannot be less than Zero")
+			return
+			ent_sem3.focus()
+		sem4 = ent_sem4.get()
+		if sem4 == "":
+			showerror("Sem 4 CGPA issue","Sem 4 CGPA cannot be empty")
+			return
+			ent_sem4.focus()
+		if float(sem4) < 0:
+			showerror("Sem 4 CGPA issue","Sem 4 CGPA cannot be less than Zero")
+			return
+			ent_sem4.focus()
+		sem5 = ent_sem5.get()
+		if sem5 == "":
+			showerror("Sem 5 CGPA issue","Sem 5 CGPA cannot be empty")
+			return
+			ent_sem5.focus()	
+		if float(sem5) < 0:
+			showerror("Sem 5 CGPA issue","Sem 5 CGPA cannot be less than Zero")
+			return
+			ent_sem5.focus()
+		sem6 = ent_sem6.get()
+		if sem6 == "":
+			showerror("Sem 6 CGPA issue","Sem 6 CGPA cannot be empty")
+			return
+			ent_sem6.focus()
+		if float(sem6) < 0:
+			showerror("Sem 6 CGPA issue","Sem 6 CGPA cannot be less than Zero")
+			return
+			ent_sem6.focus()
+		
+		
+		con = connect("task4.db")
+		cursor = con.cursor()
+		sql = "insert into std values('%s','%s','%d','%f','%f','%f','%f','%f','%f')"
+		cursor.execute(sql % (nm, col, int(phone), float(sem1), float(sem2), float(sem3), float(sem4), float(sem5), float(sem6)) )
+		con.commit()
+		showinfo("Success","record created")
+		ent_name.focus()
+	except Exception as e:
+		con.rollback()
+		showerror("issue", e)
+		ent_name.focus()
+	finally:
+		if con is not None:
+			con.close()
+
+def show_chart():
+	nm = ent_name.get()
+	phone = ent_phone.get()
+	col = ent_col.get()
+	Sem = ["Sem1","Sem2","Sem3","Sem4","Sem5","Sem6"]
+	sem1 = float(ent_sem1.get())
+	sem2 = float(ent_sem2.get())
+	sem3 = float(ent_sem3.get())
+	sem4 = float(ent_sem4.get())
+	sem5 = float(ent_sem5.get())
+	sem6 = float(ent_sem6.get())
+	CGPA = [sem1,sem2,sem3,sem4,sem5,sem6]
+	plt.figure(figsize=(12,5))
+	plt.bar(Sem,CGPA,width=0.35,color = "orange",edgecolor="red")
+	plt.xlabel("Semester")
+	plt.ylabel("CGPA")
+	plt.title(nm + " from " + col + "'s performance ")
+	showinfo("Success","Please click ok to save the chart")
+	plt.savefig(nm + ".pdf")
+	plt.show()
+	ent_name.delete(0,END)
+	ent_col.delete(0,END)
+	ent_phone.delete(0,END)
+	ent_sem1.delete(0,END)
+	ent_sem2.delete(0,END)
+	ent_sem3.delete(0,END)
+	ent_sem4.delete(0,END)
+	ent_sem5.delete(0,END)
+	ent_sem6.delete(0,END)
+	ent_name.focus()
+
+#Splash Window
+
+sw = Tk()
+sw.geometry("600x600+300+20")
+sw.configure(bg="cornsilk2")
+sw.overrideredirect(True)
+lab = Label(sw,text="\nWelcome \nto \nMy \nData Visualization \nApp",font=("Century Gothic",40,"bold"),fg="DeepPink2",bg="cornsilk2")
+lab.pack(pady=50)
+
+def sw_to_mw():
+	sw.destroy()
+
+sw.after(2000,sw_to_mw)
+
+sw.mainloop()
+
+root = Tk()
+root.title("Student Performance Visualization Project")
+root.geometry("700x750+300+20")
+f = ("Calibria",18,"bold")
+
+root.configure(bg="OliveDrab1")
+
+lab_title = Label(root,text="Student's Performance Visualization App",font=("Century Gothic",20,"bold"),bg="OliveDrab1",fg="SlateBlue3")
+lab_title.place(x=110,y=10)
+
+lab_name = Label(root,text="Enter name",font=f,bg="OliveDrab1")
+lab_name.place(x=40,y=80)
+
+ent_name = Entry(root,font=f)
+ent_name.place(x=300,y=80)
+
+lab_col = Label(root,text="Enter college name",font=f,bg="OliveDrab1")
+lab_col.place(x=40,y=150)
+
+ent_col = Entry(root,font=f)
+ent_col.place(x=300,y=150)
+
+lab_phone = Label(root,text="Enter phone no.",font=f,bg="OliveDrab1")
+lab_phone.place(x=40,y=220)
+
+ent_phone = Entry(root,font=f)
+ent_phone.place(x=300,y=220)
+
+lab_sem1 = Label(root,text="Sem 1 CGPA",font=f,bg="OliveDrab1")
+lab_sem1.place(x=80,y=290)
+
+ent_sem1 = Entry(root,font=f,width=10)
+ent_sem1.place(x=300,y=290)
+
+lab_sem2 = Label(root,text="Sem 2 CGPA ",font=f,bg="OliveDrab1")
+lab_sem2.place(x=80,y=350)
+
+ent_sem2 = Entry(root,font=f,width=10)
+ent_sem2.place(x=300,y=350)
+
+lab_sem3 = Label(root,text="Sem 3 CGPA",font=f,bg="OliveDrab1")
+lab_sem3.place(x=80,y=410)
+
+ent_sem3 = Entry(root,font=f,width=10)
+ent_sem3.place(x=300,y=410)
+
+lab_sem4 = Label(root,text="Sem 4 CGPA",font=f,bg="OliveDrab1")
+lab_sem4.place(x=80,y=470)
+
+ent_sem4 = Entry(root,font=f,width=10)
+ent_sem4.place(x=300,y=470)
+
+lab_sem5 = Label(root,text="Sem 5 CGPA",font=f,bg="OliveDrab1")
+lab_sem5.place(x=80,y=530)
+
+ent_sem5 = Entry(root,font=f,width=10)
+ent_sem5.place(x=300,y=530)
+
+lab_sem6 = Label(root,text="Sem 6 CGPA",font=f,bg="OliveDrab1")
+lab_sem6.place(x=80,y=590)
+
+ent_sem6 = Entry(root,font=f,width=10)
+ent_sem6.place(x=300,y=590)
+
+btn_save = Button(root,text="Save Data",font=f,bg="SlateBlue2",command=save)
+btn_save.place(x=230,y=650)
+
+btn_submit = Button(root,text="Show chart",font=f,bg="SlateBlue2",command=show_chart)
+btn_submit.place(x=380,y=650)
+
+ent_name.focus()
+
+root.mainloop()
